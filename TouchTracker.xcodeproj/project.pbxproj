@@ -22,6 +22,9 @@
 		947A466117FF6A9A00C74FFC /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 947A464017FF6A9900C74FFC /* UIKit.framework */; };
 		947A466917FF6A9A00C74FFC /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 947A466717FF6A9A00C74FFC /* InfoPlist.strings */; };
 		947A466B17FF6A9A00C74FFC /* TouchTrackerTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 947A466A17FF6A9A00C74FFC /* TouchTrackerTests.m */; };
+		947A46761800AF2400C74FFC /* Line.m in Sources */ = {isa = PBXBuildFile; fileRef = 947A46751800AF2400C74FFC /* Line.m */; };
+		947A46791800AFF300C74FFC /* TouchDrawView.m in Sources */ = {isa = PBXBuildFile; fileRef = 947A46781800AFF300C74FFC /* TouchDrawView.m */; };
+		947A467C1800B1A000C74FFC /* TouchViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 947A467B1800B1A000C74FFC /* TouchViewController.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -55,6 +58,12 @@
 		947A466617FF6A9A00C74FFC /* TouchTrackerTests-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "TouchTrackerTests-Info.plist"; sourceTree = "<group>"; };
 		947A466817FF6A9A00C74FFC /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		947A466A17FF6A9A00C74FFC /* TouchTrackerTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TouchTrackerTests.m; sourceTree = "<group>"; };
+		947A46741800AF2400C74FFC /* Line.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Line.h; sourceTree = "<group>"; };
+		947A46751800AF2400C74FFC /* Line.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Line.m; sourceTree = "<group>"; };
+		947A46771800AFF300C74FFC /* TouchDrawView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TouchDrawView.h; sourceTree = "<group>"; };
+		947A46781800AFF300C74FFC /* TouchDrawView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TouchDrawView.m; sourceTree = "<group>"; };
+		947A467A1800B1A000C74FFC /* TouchViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TouchViewController.h; sourceTree = "<group>"; };
+		947A467B1800B1A000C74FFC /* TouchViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TouchViewController.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -117,6 +126,12 @@
 				947A464B17FF6A9900C74FFC /* AppDelegate.h */,
 				947A464C17FF6A9900C74FFC /* AppDelegate.m */,
 				947A464E17FF6A9900C74FFC /* Main_iPhone.storyboard */,
+				947A46741800AF2400C74FFC /* Line.h */,
+				947A46751800AF2400C74FFC /* Line.m */,
+				947A46771800AFF300C74FFC /* TouchDrawView.h */,
+				947A46781800AFF300C74FFC /* TouchDrawView.m */,
+				947A467A1800B1A000C74FFC /* TouchViewController.h */,
+				947A467B1800B1A000C74FFC /* TouchViewController.m */,
 				947A465117FF6A9900C74FFC /* Main_iPad.storyboard */,
 				947A465417FF6A9900C74FFC /* ViewController.h */,
 				947A465517FF6A9A00C74FFC /* ViewController.m */,
@@ -253,7 +268,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				947A467C1800B1A000C74FFC /* TouchViewController.m in Sources */,
 				947A465617FF6A9A00C74FFC /* ViewController.m in Sources */,
+				947A46761800AF2400C74FFC /* Line.m in Sources */,
+				947A46791800AFF300C74FFC /* TouchDrawView.m in Sources */,
 				947A464D17FF6A9900C74FFC /* AppDelegate.m in Sources */,
 				947A464917FF6A9900C74FFC /* main.m in Sources */,
 			);
