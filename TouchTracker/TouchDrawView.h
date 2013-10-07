@@ -17,5 +17,4 @@
 - (void)clearAll;
 - (void)endTouches:(NSSet *)touches;
 
-
 @end
