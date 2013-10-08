@@ -26,10 +26,18 @@
         [self setMultipleTouchEnabled:YES];
         
         // Adding a tap gesture recognizer
-        UITapGestureRecognizer *tapRecognizer =
+        UITapGestureRecognizer *singleTapRecognizer =
         [[UITapGestureRecognizer alloc] initWithTarget:self
                                                 action:@selector(tap:)];
-        [self addGestureRecognizer:tapRecognizer];
+        [singleTapRecognizer setNumberOfTapsRequired:1];
+        [self addGestureRecognizer:singleTapRecognizer];
+        
+        // Adding a double tap gesture recognizer
+        UITapGestureRecognizer *doubleTapRecognizer =
+        [[UITapGestureRecognizer alloc] initWithTarget:self
+                                                action:@selector(clearAll)];
+        [doubleTapRecognizer setNumberOfTapsRequired:2];
+        [self addGestureRecognizer:doubleTapRecognizer];
         
         // Adding a long press recognizer
         UILongPressGestureRecognizer *pressRecognizer =
@@ -50,15 +58,13 @@
 - (void)drawRect:(CGRect)rect
 {
     CGContextRef context = UIGraphicsGetCurrentContext();
-    CGContextSetLineWidth(context, 10.0);
     CGContextSetLineCap(context, kCGLineCapSquare);
+    CGPoint velocity = [[[self gestureRecognizers] lastObject] velocityInView:self];
     
     // Draw complete lines in black
-    // [UIColor set] is used by drawing methods to set the color used by drawing methods
-    // so you don't change the color for individual strokes, instead you change the color
-    // and then put the drawing methods for that color after it
     [[UIColor blackColor] set];
     for (Line *line in completeLines) {
+        CGContextSetLineWidth(context, [line lineWidth]);
         CGContextMoveToPoint(context, [line begin].x, [line begin].y);
         CGContextAddLineToPoint(context, [line end].x, [line end].y);
         CGContextStrokePath(context);
@@ -68,6 +74,17 @@
     [[UIColor redColor] set];
     for (NSValue *v in linesInProcess) {
         Line *line = [linesInProcess objectForKey:v];
+        float velocityFactor = (fabsf(velocity.x) + fabsf(velocity.y)) * 0.1;
+        if (velocityFactor < 25.0) {
+            [line setLineWidth:5.0];
+        } else if (velocityFactor >= 25.0 && velocityFactor < 50.0) {
+            [line setLineWidth:10.0];
+        } else if (velocityFactor >= 50.0 && velocityFactor < 100.0) {
+            [line setLineWidth:15.0];
+        } else if (velocityFactor > 100.0) {
+            [line setLineWidth:20.0];
+        }
+        CGContextSetLineWidth(context, [line lineWidth]);
         CGContextMoveToPoint(context, [line begin].x, [line begin].y);
         CGContextAddLineToPoint(context, [line end].x, [line end].y);
         CGContextStrokePath(context);
@@ -98,13 +115,12 @@
 - (void)touchesBegan:(NSSet *)touches
            withEvent:(UIEvent *)event
 {
+    // Reset the menu and selected lines in case one was selected when
+    // the user began to draw
+    [[UIMenuController sharedMenuController] setMenuVisible:NO animated:YES];
+    [self setSelectedLine:nil];
+    
     for (UITouch *t in touches) {
-        
-        // Is this a double tap?
-        if ([t tapCount] > 1) {
-            [self clearAll];
-            return;
-        }
         
         // Use the touch object (packed in an NSValue) as the key
         NSValue *key = [NSValue valueWithNonretainedObject:t];
