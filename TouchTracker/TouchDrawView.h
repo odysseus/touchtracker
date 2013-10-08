@@ -7,6 +7,7 @@
 //
 
 #import <UIKit/UIKit.h>
+@class Line;
 
 @interface TouchDrawView : UIView
 {
@@ -14,7 +15,12 @@
     NSMutableArray *completeLines;
 }
 
+@property (nonatomic, weak) Line *selectedLine;
+
 - (void)clearAll;
 - (void)endTouches:(NSSet *)touches;
+- (void)tap:(UIGestureRecognizer *)gr;
+- (Line *)lineAtPoint:(CGPoint)point;
+- (void)deleteLine:(id)sender;
 
 @end

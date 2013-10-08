@@ -11,6 +11,8 @@
 
 @implementation TouchDrawView
 
+@synthesize selectedLine;
+
 - (id)initWithFrame:(CGRect)frame
 {
     self = [super initWithFrame:frame];
@@ -22,6 +24,11 @@
         [self setBackgroundColor:[UIColor whiteColor]];
         
         [self setMultipleTouchEnabled:YES];
+        
+        UITapGestureRecognizer *tapRecognizer =
+        [[UITapGestureRecognizer alloc] initWithTarget:self
+                                                action:@selector(tap:)];
+        [self addGestureRecognizer:tapRecognizer];
     }
     return self;
 }
@@ -33,6 +40,9 @@
     CGContextSetLineCap(context, kCGLineCapSquare);
     
     // Draw complete lines in black
+    // [UIColor set] is used by drawing methods to set the color used by drawing methods
+    // so you don't change the color for individual strokes, instead you change the color
+    // and then put the drawing methods for that color after it
     [[UIColor blackColor] set];
     for (Line *line in completeLines) {
         CGContextMoveToPoint(context, [line begin].x, [line begin].y);
@@ -46,6 +56,16 @@
         Line *line = [linesInProcess objectForKey:v];
         CGContextMoveToPoint(context, [line begin].x, [line begin].y);
         CGContextAddLineToPoint(context, [line end].x, [line end].y);
+        CGContextStrokePath(context);
+    }
+    
+    // If there is a selected line, draw it
+    if ([self selectedLine]) {
+        [[UIColor greenColor] set];
+        CGContextMoveToPoint(context, [[self selectedLine] begin].x,
+                             [[self selectedLine] begin].y);
+        CGContextAddLineToPoint(context, [[self selectedLine] end].x,
+                                [[self selectedLine] end].y);
         CGContextStrokePath(context);
     }
 }
@@ -131,6 +151,72 @@
         }
     }
     // Redraw
+    [self setNeedsDisplay];
+}
+
+- (void)tap:(UIGestureRecognizer *)gr
+{
+    NSLog(@"Tap");
+    
+    CGPoint point = [gr locationInView:self];
+    [self setSelectedLine:[self lineAtPoint:point]];
+    
+    // Remove all lines in process so that a tap doesn't result
+    // in a dot being drawn on the screen, then redraw
+    [linesInProcess removeAllObjects];
+    
+    if ([self selectedLine]) {
+        [self becomeFirstResponder];
+        // Menu Controller is a singleton, so grab the shared instance
+        UIMenuController *menuController = [UIMenuController sharedMenuController];
+        // Create an item for the menu bar
+        UIMenuItem *deleteItem = [[UIMenuItem alloc] initWithTitle:@"Delete"
+                                                            action:@selector(deleteLine:)];
+        // Set the menu controller items (needs to be in an array)
+        [menuController setMenuItems:[NSArray arrayWithObject:deleteItem]];
+        // Tell the menu where to appear
+        [menuController setTargetRect:CGRectMake(point.x, point.y, 2, 2) inView:self];
+        // Now show it
+        [menuController setMenuVisible:YES animated:YES];
+    } else {
+        // Hide the menu if no line is selected
+        [[UIMenuController sharedMenuController] setMenuVisible:NO animated:YES];
+    }
+    [self setNeedsDisplay];
+}
+
+- (Line *)lineAtPoint:(CGPoint)p
+{
+    // Find a line close to p
+    for (Line *l in completeLines) {
+        CGPoint start = [l begin];
+        CGPoint end = [l end];
+        
+        // Check a few points on the line
+        for (float t = 0.0; t <= 1.0; t += 0.05) {
+            float x = start.x + t * (end.x - start.x);
+            float y = start.y + t * (end.y - start.y);
+            
+            // If the tapped point is within 20 points, let's return this line
+            if (hypot(x - p.x, y - p.y) < 20.0) {
+                return l;
+            }
+        }
+    }
+    // If nothing is close enough to the tapped point, then we didn't select a line
+    return nil;
+}
+
+- (BOOL)canBecomeFirstResponder
+{
+    return YES;
+}
+
+- (void)deleteLine:(id)sender
+{
+    // Remove the selected line
+    [completeLines removeObject:[self selectedLine]];
+    // Redraw the display
     [self setNeedsDisplay];
 }
 
