@@ -33,4 +33,6 @@
 - (void)threeFingerSwipeDown:(UIGestureRecognizer *)gr;
 - (void)changeColor:(UISegmentedControl *)sender;
 
+- (int)numberOfLines;
+
 @end

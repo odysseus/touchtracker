@@ -218,8 +218,6 @@
 
 - (void)tap:(UIGestureRecognizer *)gr
 {
-    NSLog(@"Tap");
-    
     CGPoint point = [gr locationInView:self];
     [self setSelectedLine:[self lineAtPoint:point]];
     
@@ -379,10 +377,20 @@
 - (void)changeColor:(UISegmentedControl *)sender
 {
     if ([self backgroundColor] == [UIColor whiteColor]) {
-        NSArray *colorArray = [NSArray arrayWithObjects:[UIColor blackColor], [UIColor redColor], [UIColor yellowColor], [UIColor blueColor], nil];
+        NSArray *colorArray = [NSArray arrayWithObjects:
+                               [UIColor blackColor],
+                               [UIColor redColor],
+                               [UIColor yellowColor],
+                               [UIColor blueColor],
+                               nil];
         [self setSelectedColor:[colorArray objectAtIndex:[sender selectedSegmentIndex]]];
     } else {
-        NSArray *colorArray = [NSArray arrayWithObjects:[UIColor whiteColor], [UIColor redColor], [UIColor yellowColor], [UIColor blueColor], nil];
+        NSArray *colorArray = [NSArray arrayWithObjects:
+                               [UIColor whiteColor],
+                               [UIColor redColor],
+                               [UIColor yellowColor],
+                               [UIColor blueColor],
+                               nil];
         [self setSelectedColor:[colorArray objectAtIndex:[sender selectedSegmentIndex]]];
     }
 }
@@ -396,6 +404,18 @@
     }
     [self setNeedsDisplay];
 }
+
+// Code to showcase the Analyzer, if you remove the count = 0 line and simply instantiate
+// count instead, the analyzer will point out the possibility that the method will return
+// a "garbage" value (nil)
+- (int)numberOfLines
+{
+    int count = 0;
+    if (linesInProcess && completeLines)
+        count = (int)[linesInProcess count] + (int)[completeLines count];
+    return count;
+}
+
 @end
 
 
