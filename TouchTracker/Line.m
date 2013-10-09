@@ -10,6 +10,6 @@
 
 @implementation Line
 
-@synthesize begin, end, lineWidth;
+@synthesize begin, end, lineWidth, lineColor;
 
 @end

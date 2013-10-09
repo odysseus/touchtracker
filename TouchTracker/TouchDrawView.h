@@ -15,14 +15,22 @@
     NSMutableArray *completeLines;
     
     UIPanGestureRecognizer *moveRecognizer;
+    UISegmentedControl *segmentedControl;
 }
 
 @property (nonatomic, weak) Line *selectedLine;
+@property (nonatomic) UIColor *selectedColor;
 
 - (void)clearAll;
 - (void)endTouches:(NSSet *)touches;
-- (void)tap:(UIGestureRecognizer *)gr;
 - (Line *)lineAtPoint:(CGPoint)point;
 - (void)deleteLine:(id)sender;
+
+// Gesture Methods
+- (void)longPress:(UIGestureRecognizer *)gr;
+- (void)tap:(UIGestureRecognizer *)gr;
+- (void)threeFingerSwipeUp:(UIGestureRecognizer *)gr;
+- (void)threeFingerSwipeDown:(UIGestureRecognizer *)gr;
+- (void)changeColor:(UISegmentedControl *)sender;
 
 @end

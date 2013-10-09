@@ -51,6 +51,22 @@
         [moveRecognizer setDelegate:self];
         [moveRecognizer setCancelsTouchesInView:NO];
         [self addGestureRecognizer:moveRecognizer];
+        
+        // Adding an upwards three finger swipe gesture
+        UISwipeGestureRecognizer *threeFingerSwipeUp =
+        [[UISwipeGestureRecognizer alloc] initWithTarget:self
+                                                  action:@selector(threeFingerSwipeUp:)];
+        [threeFingerSwipeUp setNumberOfTouchesRequired:3];
+        [threeFingerSwipeUp setDirection:UISwipeGestureRecognizerDirectionUp];
+        [self addGestureRecognizer:threeFingerSwipeUp];
+        
+        // And a downwards three finger swipe
+        UISwipeGestureRecognizer *threeFingerSwipeDown =
+        [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(threeFingerSwipeDown:)];
+        [threeFingerSwipeDown setNumberOfTouchesRequired:3];
+        [threeFingerSwipeDown setDirection:UISwipeGestureRecognizerDirectionDown];
+        [self addGestureRecognizer:threeFingerSwipeDown];
+        
     }
     return self;
 }
@@ -59,22 +75,43 @@
 {
     CGContextRef context = UIGraphicsGetCurrentContext();
     CGContextSetLineCap(context, kCGLineCapSquare);
-    CGPoint velocity = [[[self gestureRecognizers] lastObject] velocityInView:self];
+    // Fetch the velocity for variable line width
+    CGPoint velocity = [moveRecognizer velocityInView:self];
     
-    // Draw complete lines in black
-    [[UIColor blackColor] set];
-    for (Line *line in completeLines) {
-        CGContextSetLineWidth(context, [line lineWidth]);
-        CGContextMoveToPoint(context, [line begin].x, [line begin].y);
-        CGContextAddLineToPoint(context, [line end].x, [line end].y);
-        CGContextStrokePath(context);
+    if ([self backgroundColor] == [UIColor blackColor]) {
+        for (Line *line in completeLines) {
+            if (![line lineColor] || [line lineColor] == [UIColor blackColor]) {
+                [line setLineColor:[UIColor whiteColor]];
+            }
+            [[line lineColor] set];
+            CGContextSetLineWidth(context, [line lineWidth]);
+            CGContextMoveToPoint(context, [line begin].x, [line begin].y);
+            CGContextAddLineToPoint(context, [line end].x, [line end].y);
+            CGContextStrokePath(context);
+        }
+    } else {
+        for (Line *line in completeLines) {
+            if (![line lineColor] || [line lineColor] == [UIColor whiteColor]) {
+                [line setLineColor:[UIColor blackColor]];
+            }
+            [[line lineColor] set];
+            CGContextSetLineWidth(context, [line lineWidth]);
+            CGContextMoveToPoint(context, [line begin].x, [line begin].y);
+            CGContextAddLineToPoint(context, [line end].x, [line end].y);
+            CGContextStrokePath(context);
+        }
     }
     
     // Draw lines in process in red
     [[UIColor redColor] set];
     for (NSValue *v in linesInProcess) {
         Line *line = [linesInProcess objectForKey:v];
+        // Velocity has an x and y component, so velocity factor takes the absolute value
+        // of the x and y components, adds them together and multiplies by 0.1 to keep it
+        // mostly in the 0-100 range
         float velocityFactor = (fabsf(velocity.x) + fabsf(velocity.y)) * 0.1;
+        // Originally set the line width with the velocityFactor directly, but that proved
+        // wildly variable, so now it's set by conditional switch based on the velocityFactor
         if (velocityFactor < 25.0) {
             [line setLineWidth:5.0];
         } else if (velocityFactor >= 25.0 && velocityFactor < 50.0) {
@@ -306,6 +343,64 @@
     }
 }
 
+- (void)threeFingerSwipeUp:(UIGestureRecognizer *)gr
+{
+    [linesInProcess removeAllObjects];
+    
+    // Change the first available color based on the background color
+    if ([self backgroundColor] == [UIColor whiteColor]) {
+        NSArray *rgbbArray = [[NSArray alloc] initWithObjects:@"Black", @"Red", @"Yellow", @"Blue", nil];
+        segmentedControl = [[UISegmentedControl alloc] initWithItems:rgbbArray];
+    } else {
+        NSArray *rgbbArray = [[NSArray alloc] initWithObjects:@"White", @"Red", @"Yellow", @"Blue", nil];
+        segmentedControl = [[UISegmentedControl alloc] initWithItems:rgbbArray];
+    }
+    
+    // Choose where to present the segmented controller, attach an action and present it
+    [segmentedControl setCenter:CGPointMake(self.frame.size.width / 2, self.frame.size.height / 2)];
+    [segmentedControl addTarget:nil
+                         action:@selector(changeColor:)
+               forControlEvents:UIControlEventValueChanged];
+    [self addSubview:segmentedControl];
+}
+
+- (void)threeFingerSwipeDown:(UIGestureRecognizer *)gr
+{
+    [linesInProcess removeAllObjects];
+    [segmentedControl removeFromSuperview];
+}
+
+
+- (void)motionEnded:(UIEventSubtype)motion withEvent:(UIEvent *)event
+{
+    if ( event.subtype == UIEventSubtypeMotionShake ) {
+        [self flipBackground];
+    }
+    if ( [super respondsToSelector:@selector(motionEnded:withEvent:)] ) {
+        [super motionEnded:motion withEvent:event];
+    }
+}
+
+- (void)changeColor:(UISegmentedControl *)sender
+{
+    if ([self backgroundColor] == [UIColor whiteColor]) {
+        NSArray *colorArray = [NSArray arrayWithObjects:[UIColor blackColor], [UIColor redColor], [UIColor yellowColor], [UIColor blueColor], nil];
+        [self setSelectedColor:[colorArray objectAtIndex:[sender selectedSegmentIndex]]];
+    } else {
+        NSArray *colorArray = [NSArray arrayWithObjects:[UIColor whiteColor], [UIColor redColor], [UIColor yellowColor], [UIColor blueColor], nil];
+        [self setSelectedColor:[colorArray objectAtIndex:[sender selectedSegmentIndex]]];
+    }
+}
+
+- (void)flipBackground
+{
+    if ([self backgroundColor] == [UIColor whiteColor]) {
+        [self setBackgroundColor:[UIColor blackColor]];
+    } else {
+        [self setBackgroundColor:[UIColor whiteColor]];
+    }
+    [self setNeedsDisplay];
+}
 @end
 
 
