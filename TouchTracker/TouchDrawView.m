@@ -78,28 +78,23 @@
     // Fetch the velocity for variable line width
     CGPoint velocity = [moveRecognizer velocityInView:self];
     
-    if ([self backgroundColor] == [UIColor blackColor]) {
-        for (Line *line in completeLines) {
-            if (![line lineColor] || [line lineColor] == [UIColor blackColor]) {
+    for (Line *line in completeLines) {
+        // Because the background switches colors, we need to check for lines that have no
+        // color assignment, and lines whose color is the same as the background
+        if(![line lineColor] || ([line lineColor] == [self backgroundColor])) {
+            // Then set them to the opposite of the background color
+            if ([self backgroundColor] == [UIColor whiteColor]) {
+                [line setLineColor:[UIColor blackColor]];
+            } else {
                 [line setLineColor:[UIColor whiteColor]];
             }
-            [[line lineColor] set];
-            CGContextSetLineWidth(context, [line lineWidth]);
-            CGContextMoveToPoint(context, [line begin].x, [line begin].y);
-            CGContextAddLineToPoint(context, [line end].x, [line end].y);
-            CGContextStrokePath(context);
         }
-    } else {
-        for (Line *line in completeLines) {
-            if (![line lineColor] || [line lineColor] == [UIColor whiteColor]) {
-                [line setLineColor:[UIColor blackColor]];
-            }
-            [[line lineColor] set];
-            CGContextSetLineWidth(context, [line lineWidth]);
-            CGContextMoveToPoint(context, [line begin].x, [line begin].y);
-            CGContextAddLineToPoint(context, [line end].x, [line end].y);
-            CGContextStrokePath(context);
-        }
+        // Finally, set the line color and draw the line
+        [[line lineColor] set];
+        CGContextSetLineWidth(context, [line lineWidth]);
+        CGContextMoveToPoint(context, [line begin].x, [line begin].y);
+        CGContextAddLineToPoint(context, [line end].x, [line end].y);
+        CGContextStrokePath(context);
     }
     
     // Draw lines in process in red
