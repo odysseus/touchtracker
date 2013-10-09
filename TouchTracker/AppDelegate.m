@@ -20,10 +20,11 @@
     
     self.window.backgroundColor = [UIColor whiteColor];
     [self.window makeKeyAndVisible];
-    
-#ifdef VIEW_DEBUG
-    NSLog(@"%@", [[self window] performSelector:@selector(recursiveDescription)]);
-#endif
+
+    // Preprocessor macro that adds debug code as long as it's encapsulated in the #idef / #endif blocks
+//#ifdef VIEW_DEBUG
+//    NSLog(@"%@", [[self window] performSelector:@selector(recursiveDescription)]);
+//#endif
     
     return YES;
 }
